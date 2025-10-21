@@ -1,0 +1,6 @@
+# declare the class should be load at the initial time
+org.springframework.cloud.bootstrap.BootstrapConfiguration=\
+com.old.silence.cloud.config.SilenceConfigBootstrapConfiguration
+
+org.springframework.boot.env.EnvironmentPostProcessor=\
+com.old.silence.cloud.config.PlatformDefaultConfigEnvironmentPostProcessor

@@ -1,0 +1,120 @@
+logging.level:
+  root: INFO
+  '[org.springframework.jdbc.core]': TRACE
+  '[org.springframework.web.filter.CommonRequestLoggingFilter]': DEBUG
+  '[org.springframework.web.servlet.HandlerMapping.Mappings]': DEBUG
+  '[com.old.silence.web.client]': DEBUG
+  '[com.old.silence.core.jdbc]': DEBUG
+
+platform.config.default.loaded: true
+
+server:
+  port: 38080
+  http2.enabled: true
+  compression.enabled: true
+  tomcat:
+    basedir: ${user.home}/tomcat
+    accesslog:
+      enabled: true
+      directory: ${user.home}/logs/app
+      prefix: ${spring.application.name}--access-log
+
+spring:
+  cloud:
+    config.enabled: false
+    openfeign.autoconfiguration.jackson.enabled: false
+  datasource:
+    hikari:
+      connection-timeout: 5000
+      idle-timeout: 600000
+      max-lifetime: 3000000
+      minimum-idle: 10
+      maximum: 10
+      maximum-pool-size: 50
+      data-source-properties:
+        timeZone: "Asia/Shanghai"
+  liquibase:
+    change-log: classpath:/db/changelogs/changelog-master.xml
+    enabled: false
+  redis:
+    lettuce:
+      cluster.refresh.adaptive: true
+      pool:
+        max-active: 50
+        max-idle: 50
+        max-wait: 3000
+        min-idle: 5
+  message.fallback-to-system-locale: false
+  threads.virtual.enabled: true
+  web:
+    locale-resolver: fixed
+    locale: zh_CN
+  mvc.format:
+    date: iso
+    time: iso
+    date-time: iso
+  data:
+    web:
+      pageable:
+        pageParameter: pageNo
+        sizeParameter: pageSize
+        oneIndexedParameters: true
+
+mybatis:
+  mapper-locations: classpath:/mapper/**/*Mapper.xml
+
+mybatis-plus:
+  configuration:
+    # 开启驼峰命名映射
+    map-underscore-to-camel-case: true
+    default-enum-type-handler: com.old.silence.data.commons.handler.GenericEnumTypeHandler
+  global-config:
+    db-config:
+      # 全局主键类型（可选）
+      id-type: auto
+      # 逻辑删除字段（可选）
+      logic-delete-field: is_deleted
+      logic-not-delete-value: 0
+      logic-delete-value: 1
+  type-handlers-package: com.old.silence.data.commons.handler
+
+feign:
+  client.config.default:
+    logger-level:  full
+    connection-timeout: 3000
+  httpclient.connection-timeout: 3000
+
+---
+
+spring.config.activate.on-profile: CI-LOCAL | CI-UT
+spring.liquibase.enabled: true
+
+silence.data.jdbc.projected-payload-type-allowed: true
+
+---
+
+spring.config.activate.on-profile: CI-1 | CI-2
+
+logging.logback:
+  code-line-output-enabled: true
+  async.include-caller-data: true
+  tracing-output-enabled: true
+
+---
+
+spring.config.activate.on-profile: STG-1 | STG-2 | STG-5
+
+logging.logback:
+  code-line-output-enabled: true
+  async.include-caller-data: true
+  tracing-output-enabled: true
+
+
+---
+
+spring.config.activate.on-profile: STG-6 | PRD-1 | PRD-2
+
+logging.logback:
+  code-line-output-enabled: false
+  async.include-caller-data: false
+  tracing-output-enabled: true
